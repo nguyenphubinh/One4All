@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One4ALL - Tiện ích chuyển đổi</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; }
+    .container { max-width: 600px; margin: 30px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 24px; }
+    h2 { color: #1a73e8; }
+    form { margin-bottom: 32px; }
+    label { display: block; margin-bottom: 8px; font-weight: bold; }
+    input, select, button { width: 100%; margin-bottom: 12px; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+    button { background: #1a73e8; color: #fff; border: none; cursor: pointer; font-weight: bold; }
+    button:hover { background: #155ab6; }
+    .result { margin-top: 8px; color: green; }
+    @media (max-width: 700px) { .container { padding: 10px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>One4ALL - Tiện ích chuyển đổi</h1>
+    <h2>1. Chuyển đổi PDF ↔ DOCX</h2>
+    <form id="form-doc" enctype="multipart/form-data">
+      <label>Chọn file PDF hoặc DOCX:</label>
+      <input type="file" name="file" accept=".pdf,.docx" required title="Chọn file PDF hoặc DOCX">
+      <button type="submit">Chuyển đổi</button>
+      <div class="result" id="result-doc"></div>
+    </form>
+
+    <h2>2. Chuyển đổi định dạng ảnh</h2>
+    <form id="form-image" enctype="multipart/form-data">
+      <label>Chọn ảnh:</label>
+      <input type="file" name="image" accept="image/*" required title="Chọn ảnh">
+      <label>Định dạng mong muốn:</label>
+      <select name="format" required title="Chọn định dạng ảnh mong muốn">
+        <option value="jpeg">JPEG</option>
+        <option value="png">PNG</option>
+        <option value="webp">WebP</option>
+      </select>
+      <label>Chất lượng (1-100, mặc định 80):</label>
+      <input type="number" name="quality" min="1" max="100" placeholder="80">
+      <label>Resize (tuỳ chọn):</label>
+      <input type="number" name="width" min="1" placeholder="Chiều rộng (px)" title="Chiều rộng (px)">
+      <input type="number" name="height" min="1" placeholder="Chiều cao (px)" title="Chiều cao (px)">
+      <button type="submit">Chuyển đổi ảnh</button>
+      <div class="result" id="result-image"></div>
+    </form>
+
+    <h2>3. Tải video TikTok không logo</h2>
+    <form id="form-tiktok">
+      <label>Nhập URL video TikTok:</label>
+      <input type="url" name="url" placeholder="https://www.tiktok.com/..." required>
+      <button type="submit">Tải video</button>
+      <div class="result" id="result-tiktok"></div>
+    </form>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html> 
