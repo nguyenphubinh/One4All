@@ -5,56 +5,310 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>One4ALL - Tiện ích chuyển đổi</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; }
-    .container { max-width: 600px; margin: 30px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 24px; }
-    h2 { color: #1a73e8; }
-    form { margin-bottom: 32px; }
-    label { display: block; margin-bottom: 8px; font-weight: bold; }
-    input, select, button { width: 100%; margin-bottom: 12px; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
-    button { background: #1a73e8; color: #fff; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background: #155ab6; }
-    .result { margin-top: 8px; color: green; }
-    @media (max-width: 700px) { .container { padding: 10px; } }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: linear-gradient(135deg, #e8f0fe 0%, #f3e8ff 100%);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .site-header {
+      background: linear-gradient(90deg, #1a73e8 0%, #7c3aed 100%);
+      color: #fff;
+      text-align: center;
+      padding: 28px 16px 20px;
+      box-shadow: 0 2px 12px #0002;
+    }
+    .site-header h1 { margin: 0 0 4px; font-size: 2rem; letter-spacing: 1px; }
+    .site-header p { margin: 0; opacity: 0.88; font-size: 1rem; }
+
+    /* Tab nav */
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 16px 0;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: #fff;
+      border: 2px solid #1a73e8;
+      color: #1a73e8;
+      border-radius: 24px;
+      padding: 8px 22px;
+      font-size: 0.97rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: linear-gradient(90deg, #1a73e8, #7c3aed);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    /* Cards */
+    .card {
+      max-width: 560px;
+      margin: 24px auto 16px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0001;
+      padding: 28px 28px 20px;
+      display: none;
+    }
+    .card.active { display: block; }
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #1a73e8;
+      margin: 0 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .icon { font-size: 1.4rem; }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed #1a73e8;
+      border-radius: 12px;
+      padding: 32px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s;
+      background: #f0f6ff;
+      position: relative;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      background: #dbeafe;
+      border-color: #7c3aed;
+    }
+    .drop-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .drop-zone-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .drop-zone-text { color: #555; font-size: 0.97rem; }
+    .drop-zone-text b { color: #1a73e8; }
+
+    /* File info pill */
+    .file-info {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 12px;
+      font-size: 0.92rem;
+      color: #166534;
+    }
+    .file-info.visible { display: flex; }
+    .file-info .fi-name { font-weight: 600; flex: 1; word-break: break-all; }
+    .file-info .fi-clear {
+      cursor: pointer; color: #dc2626; font-size: 1.1rem; flex-shrink: 0;
+      background: none; border: none; padding: 0;
+    }
+
+    /* Conversion direction badge */
+    .conv-direction {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 14px 0 6px;
+      font-size: 1rem;
+      color: #7c3aed;
+      font-weight: 600;
+    }
+    .conv-direction .badge {
+      background: linear-gradient(90deg, #1a73e8, #7c3aed);
+      color: #fff;
+      border-radius: 8px;
+      padding: 4px 14px;
+      font-size: 0.97rem;
+      letter-spacing: 0.5px;
+    }
+    .conv-direction .arrow { font-size: 1.3rem; }
+    .conv-direction.hidden { display: none; }
+
+    /* Form fields */
+    .field { margin-bottom: 14px; }
+    .field label { display: block; margin-bottom: 5px; font-weight: 600; color: #374151; font-size: 0.93rem; }
+    .field select, .field input[type="number"], .field input[type="url"] {
+      width: 100%; padding: 9px 12px; border-radius: 8px;
+      border: 1.5px solid #d1d5db; font-size: 0.97rem;
+      transition: border-color 0.16s; outline: none;
+    }
+    .field select:focus, .field input:focus { border-color: #1a73e8; }
+    .field-row { display: flex; gap: 10px; }
+    .field-row .field { flex: 1; }
+
+    /* Submit button */
+    .btn-convert {
+      width: 100%; padding: 12px; border-radius: 10px;
+      background: linear-gradient(90deg, #1a73e8, #7c3aed);
+      color: #fff; border: none; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; margin-top: 6px;
+      transition: opacity 0.18s, transform 0.12s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-convert:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+    .btn-convert:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 3px solid #ffffff55;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .btn-convert.loading .spinner { display: block; }
+    .btn-convert.loading .btn-label { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Result area */
+    .result-area {
+      margin-top: 14px;
+      min-height: 36px;
+      border-radius: 8px;
+      padding: 0;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .result-area.error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #b91c1c;
+      padding: 10px 14px;
+    }
+    .result-area .download-btn {
+      display: flex; align-items: center; gap: 10px;
+      background: linear-gradient(90deg, #16a34a, #059669);
+      color: #fff; border-radius: 8px; padding: 11px 18px;
+      text-decoration: none; font-weight: 700; font-size: 1rem;
+      transition: opacity 0.15s;
+    }
+    .result-area .download-btn:hover { opacity: 0.88; }
+    .result-area .download-btn .dl-icon { font-size: 1.3rem; }
+
+    /* Footer */
+    .site-footer {
+      text-align: center; color: #888; font-size: 0.85rem;
+      padding: 24px 8px 16px;
+    }
+
+    @media (max-width: 620px) {
+      .card { margin: 16px 8px; padding: 18px 12px; }
+      .site-header h1 { font-size: 1.4rem; }
+      .field-row { flex-direction: column; gap: 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>One4ALL - Tiện ích chuyển đổi</h1>
-    <h2>1. Chuyển đổi PDF ↔ DOCX</h2>
-    <form id="form-doc" enctype="multipart/form-data">
-      <label>Chọn file PDF hoặc DOCX:</label>
-      <input type="file" name="file" accept=".pdf,.docx" required title="Chọn file PDF hoặc DOCX">
-      <button type="submit">Chuyển đổi</button>
-      <div class="result" id="result-doc"></div>
-    </form>
+  <header class="site-header">
+    <h1>⚡ One4ALL</h1>
+    <p>Tiện ích chuyển đổi file trực tuyến — nhanh, miễn phí</p>
+  </header>
 
-    <h2>2. Chuyển đổi định dạng ảnh</h2>
-    <form id="form-image" enctype="multipart/form-data">
-      <label>Chọn ảnh:</label>
-      <input type="file" name="image" accept="image/*" required title="Chọn ảnh">
-      <label>Định dạng mong muốn:</label>
-      <select name="format" required title="Chọn định dạng ảnh mong muốn">
-        <option value="jpeg">JPEG</option>
-        <option value="png">PNG</option>
-        <option value="webp">WebP</option>
-      </select>
-      <label>Chất lượng (1-100, mặc định 80):</label>
-      <input type="number" name="quality" min="1" max="100" placeholder="80">
-      <label>Resize (tuỳ chọn):</label>
-      <input type="number" name="width" min="1" placeholder="Chiều rộng (px)" title="Chiều rộng (px)">
-      <input type="number" name="height" min="1" placeholder="Chiều cao (px)" title="Chiều cao (px)">
-      <button type="submit">Chuyển đổi ảnh</button>
-      <div class="result" id="result-image"></div>
-    </form>
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="tab-doc">📄 PDF ↔ DOCX</button>
+    <button class="tab-btn" data-tab="tab-image">🖼️ Chuyển đổi ảnh</button>
+    <button class="tab-btn" data-tab="tab-tiktok">🎵 TikTok downloader</button>
+  </nav>
 
-    <h2>3. Tải video TikTok không logo</h2>
+  <!-- PDF ↔ DOCX -->
+  <section class="card active" id="tab-doc">
+    <div class="card-title"><span class="icon">📄</span> Chuyển đổi PDF ↔ DOCX</div>
+    <div class="drop-zone" id="doc-drop-zone">
+      <input type="file" id="doc-file-input" accept=".pdf,.docx" title="Chọn file PDF hoặc DOCX">
+      <div class="drop-zone-icon">📂</div>
+      <div class="drop-zone-text">Kéo thả file vào đây hoặc <b>nhấn để chọn</b><br><small>Hỗ trợ: .PDF, .DOCX &nbsp;•&nbsp; Tối đa 20MB</small></div>
+    </div>
+    <div class="file-info" id="doc-file-info">
+      <span>📎</span>
+      <span class="fi-name" id="doc-file-name"></span>
+      <button class="fi-clear" id="doc-file-clear" title="Xoá file">✕</button>
+    </div>
+    <div class="conv-direction hidden" id="doc-conv-direction">
+      <span class="badge" id="doc-from-badge">PDF</span>
+      <span class="arrow">→</span>
+      <span class="badge" id="doc-to-badge">DOCX</span>
+    </div>
+    <button class="btn-convert" id="btn-convert-doc" disabled>
+      <span class="spinner"></span>
+      <span class="btn-label">🔄 Chuyển đổi ngay</span>
+    </button>
+    <div class="result-area" id="result-doc"></div>
+  </section>
+
+  <!-- Image conversion -->
+  <section class="card" id="tab-image">
+    <div class="card-title"><span class="icon">🖼️</span> Chuyển đổi định dạng ảnh</div>
+    <div class="drop-zone" id="img-drop-zone">
+      <input type="file" id="img-file-input" accept="image/*" title="Chọn ảnh">
+      <div class="drop-zone-icon">🖼️</div>
+      <div class="drop-zone-text">Kéo thả ảnh vào đây hoặc <b>nhấn để chọn</b><br><small>Hỗ trợ: JPG, PNG, WebP, … &nbsp;•&nbsp; Tối đa 20MB</small></div>
+    </div>
+    <div class="file-info" id="img-file-info">
+      <span>🖼️</span>
+      <span class="fi-name" id="img-file-name"></span>
+      <button class="fi-clear" id="img-file-clear" title="Xoá file">✕</button>
+    </div>
+    <form id="form-image">
+      <div class="field">
+        <label>Định dạng mong muốn</label>
+        <select name="format" required title="Chọn định dạng ảnh mong muốn">
+          <option value="jpeg">JPEG</option>
+          <option value="png">PNG</option>
+          <option value="webp">WebP</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Chất lượng (1–100, mặc định 80)</label>
+        <input type="number" name="quality" min="1" max="100" placeholder="80">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Chiều rộng (px)</label>
+          <input type="number" name="width" min="1" placeholder="Tuỳ chọn" title="Chiều rộng (px)">
+        </div>
+        <div class="field">
+          <label>Chiều cao (px)</label>
+          <input type="number" name="height" min="1" placeholder="Tuỳ chọn" title="Chiều cao (px)">
+        </div>
+      </div>
+      <button class="btn-convert" type="submit" id="btn-convert-img" disabled>
+        <span class="spinner"></span>
+        <span class="btn-label">🔄 Chuyển đổi ảnh</span>
+      </button>
+    </form>
+    <div class="result-area" id="result-image"></div>
+  </section>
+
+  <!-- TikTok -->
+  <section class="card" id="tab-tiktok">
+    <div class="card-title"><span class="icon">🎵</span> Tải video TikTok không logo</div>
     <form id="form-tiktok">
-      <label>Nhập URL video TikTok:</label>
-      <input type="url" name="url" placeholder="https://www.tiktok.com/..." required>
-      <button type="submit">Tải video</button>
-      <div class="result" id="result-tiktok"></div>
+      <div class="field">
+        <label>Nhập URL video TikTok</label>
+        <input type="url" name="url" placeholder="https://www.tiktok.com/..." required>
+      </div>
+      <button class="btn-convert" type="submit" id="btn-tiktok">
+        <span class="spinner"></span>
+        <span class="btn-label">⬇️ Tải video</span>
+      </button>
     </form>
-  </div>
+    <div class="result-area" id="result-tiktok"></div>
+  </section>
+
+  <footer class="site-footer">© 2025 One4ALL &nbsp;•&nbsp; Miễn phí &nbsp;•&nbsp; Không watermark</footer>
+
   <script src="main.js"></script>
 </body>
 </html> 
